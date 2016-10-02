@@ -3,7 +3,7 @@ import zlib
 import tornado.ioloop, tornado.websocket
 from tornado import gen
 
-class TradersBot():
+class TradersBot:
 	# takes in variable number of args
 	def __doNothing(self, *args):
 		pass
