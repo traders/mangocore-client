@@ -42,3 +42,5 @@ Will buy 5 AAPL shares each time a news event is received. You can also return t
 Finally, run the bot:
 
     t.run()
+	
+Note that after this function is called, you can't change the event listener functions; for example, you add a handler to `onPing` halfway through trading.
