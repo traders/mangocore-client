@@ -12,6 +12,7 @@ to install the `tradersbot` package.
 Import `tradersbot` and instantiate a TradersBot; the constructor takes in the mangocore server IP/URL, a username, a password, and an optional token:
 
     from tradersbot import TradersBot
+    import json # needed to send json messages later
     t = TradersBot('18.247.12.164', 'MIT2', 'password')
 
 Next, for each MangoCore message that you want to listen to, specify a function to be called on the receipt of the message. The messages you can subscribe to are:
@@ -30,10 +31,13 @@ Each of these functions should take in one argument, a map that contains all inf
 
     def onNews(msg):
         return json.dumps({'message_type' : 'MODIFY ORDERS', 'orders' : [{'ticker' : 'AAPL', 'buy' : True, 'quantity' : 5}]})
-    t.onNews = randomTrade
+    t.onNews = onNews
 
-Will buy 5 AAPL shares each time a news event is received.
+Will buy 5 AAPL shares each time a news event is received. You can also return the dictionary directly; `TradersBot` assumes that if your function returns an object that isn't a string, it is an object that `TradersBot` needs to json-ify before sending. So the following also works:
 
+    def onNews(msg):
+        return {'message_type' : 'MODIFY ORDERS', 'orders' : [{'ticker' : 'AAPL', 'buy' : True, 'quantity' : 5}]}
+    t.onNews = onNews
 
 Finally, run the bot:
 

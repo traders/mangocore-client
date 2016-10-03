@@ -1,0 +1,4 @@
+*.py[ocd]
+MANIFEST
+dist/
+tradersbot.egg-info

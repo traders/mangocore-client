@@ -24,6 +24,18 @@ class TradersBot:
 		self.onAckSubscribe		= self.__doNothing
 		self.onTenderOffer		= self.__doNothing
 		self.onAckTenderOffer	= self.__doNothing
+		self.fmap = {
+			'ACK REGISTER'		: self.onAckRegister,
+			'PING'				: self.onPing,
+			'MARKET UPDATE'		: self.onMarketUpdate,
+			'TRADER UPDATE'		: self.onTraderUpdate,
+			'TRADE'				: self.onTrade,
+			'ACK MODIFY ORDERS'	: self.onAckModifyOrders,
+			'NEWS'				: self.onNews,
+			'ACK SUBSCRIBE'		: self.onAckSubscribe,
+			'TENDER OFFER'		: self.onTenderOffer,
+			'ACK TENDER OFFER'	: self.onAckTenderOffer
+		}
 
 	# Reads input from from the server and processes
 	# them accordingly
@@ -33,30 +45,14 @@ class TradersBot:
 		msg = zlib.decompress(msg, 16 + zlib.MAX_WBITS)
 		msg = json.loads(msg.decode('utf-8'))
 		#print msg
-		type = msg['message_type']
-		res = None
-		if type == 'ACK REGISTER':
-			res = self.onAckRegister(msg)
-		elif type == 'PING':
-			res = self.onPing(msg)
-		elif type == 'MARKET UPDATE':
-			res = self.onMarketUpdate(msg)
-		elif type == 'TRADER UPDATE':
-			res = self.onTraderUpdate(msg)
-		elif type == 'TRADE':
-			res = self.onTrade(msg)
-		elif type == 'ACK MODIFY ORDERS':
-			res = self.onAckModifyOrders(msg)
-		elif type == 'NEWS':
-			res = self.onNews(msg)
-		elif type == 'ACK SUBSCRIBE':
-			res = self.onAckSubscribe(msg)
-		elif type == 'TENDER OFFER':
-			res = self.onTenderOffer(msg)
-		elif type == 'ACK TENDER OFFER':
-			res = self.onAckTenderOffer(msg)
-		if res is not None:
-			self.__write(res)
+		func = self.fmap.get(msg['message_type'])
+		if func is not None:
+			res = func(msg)
+			if res is not None:
+				# if not a string, assume it is an object not JSON-ified yet
+				if not isinstance(res, basestring):
+					res = json.dumps(res)
+				self.__write(res)
 
 	def __write(self, msg):
 		self.ws.write_message(msg)
