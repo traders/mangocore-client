@@ -3,14 +3,15 @@ import zlib
 import tornado.ioloop, tornado.websocket
 from tornado import gen
 
-__version__ = '0.2.0'
-
 class TradersBot:
 	# takes in variable number of args
 	def __doNothing(self, *args):
 		pass
 
 	def __init__(self, host, id, password, token = None):
+		'''
+		hyuh
+		'''
 		self.host = host
 		self.id = id
 		self.password = password
@@ -56,6 +57,9 @@ class TradersBot:
 		else:
 			self.__write(json.dumps({'message_type' : 'REGISTER'}))
 	def run(self):
+		'''
+		hyuh
+		'''
 		self.fmap = {
 			'ACK REGISTER'		: self.onAckRegister,
 			'PING'				: self.onPing,
@@ -75,6 +79,9 @@ class TradersBot:
 		tornado.ioloop.IOLoop.instance().start()
 
 	def addPeriodicCallback(self, func, periodMs):
+		'''
+		hyuh
+		'''
 		def f():
 			order = TradersOrder()
 			func(order)
@@ -90,11 +97,20 @@ class TradersOrder:
 		self.jsons = []
 
 	def addBuy(self, ticker, quantity, price = None, token = None):
+		'''
+		hyuh
+		'''
 		self.addTrade(ticker, True, quantity, price, token)
 	def addSell(self, ticker, quantity, price = None, token = None):
+		'''
+		hyuh
+		'''
 		self.addTrade(ticker, False, quantity, price, token)
 
 	def addTrade(self, ticker, isBuy, quantity, price = None, token = None):
+		'''
+		hyuh
+		'''
 		if quantity == 0:
 			return
 		if quantity < 0:
@@ -107,9 +123,15 @@ class TradersOrder:
 		if token is not None:
 			self.orders[-1]["token"] = token
 	def addCancel(self, ticker, orderId):
+		'''
+		hyuh
+		'''
 		self.cancels.append({"ticker":ticker, "order_id":orderId})
 
 	def toJson(self, token = None):
+		'''
+		hyuh
+		'''
 		msgMap = {"message_type":"MODIFY ORDERS"}
 		if len(self.orders) > 0:
 			msgMap["orders"] = self.orders

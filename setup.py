@@ -1,6 +1,5 @@
 from setuptools import setup
-from tradersbot import __version__
-
+exec(open('tradersbot/version.py').read())
 setup(
 	name = 'tradersbot',
 	packages = ['tradersbot'], # this must be the same as the name above

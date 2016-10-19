@@ -1,4 +1,6 @@
 *.py[ocd]
+*.swp
 MANIFEST
+build/
 dist/
 tradersbot.egg-info
