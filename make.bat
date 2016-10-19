@@ -260,4 +260,18 @@ if "%1" == "pseudoxml" (
 	goto end
 )
 
+if "%1" == "gh-pages" (
+	SET GH_PAGES_SOURCES=source tradersbot make.bat
+	git checkout gh-pages
+	rmdir /s /q build  _sources _static 2>nul
+	git checkout master -- %GH_PAGES_SOURCES%
+	git reset HEAD
+	call make html
+	robocopy build\html .\ /e /move
+	rmdir /s /q %GH_PAGES_SOURCES% build 2>nul
+	git add -A
+	for /f %%i in ('git rev-parse master') do set MSG=%%i
+	git commit -m "Generated gh-pages for %MSG%" && git push origin gh-pages & git checkout master
+)
+
 :end
