@@ -1,15 +1,15 @@
 from setuptools import setup
-version = '0.1.4'
+exec(open('tradersbot/version.py').read())
 setup(
 	name = 'tradersbot',
 	packages = ['tradersbot'], # this must be the same as the name above
-	version = version,
+	version = __version__,
 	description = 'Python wrapper for mangocore API',
 	author = 'Traders@MIT',
 	author_email = 'traders@mit.edu',
 	license = 'MIT',
 	url = 'https://github.com/traders/mangocore-client',
-	download_url = 'https://github.com/traders/mangocore-client/tarball/' + version,
+	download_url = 'https://github.com/traders/mangocore-client/tarball/' + __version__,
 	install_requires = ['tornado'],
 	keywords = ['MIT', 'quant', 'traders', 'trading'],
 	classifiers = [],
