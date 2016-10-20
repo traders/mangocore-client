@@ -80,7 +80,14 @@ class TradersBot:
 
 	def addPeriodicCallback(self, func, periodMs):
 		'''
-		hyuh
+		.. warning::
+			This function only exists because it used in MangoCore stress tests, to make sure
+			MangoCore remains performant under periods of high frequency trade. We strongly advise
+			against using this function in your trading code. Trades should happen in reaction to
+			market events, which is what callbacks are for.
+
+		Every `periodMs` milliseconds, TradersBot will call `func` with a blank TradersOrder.
+		`func` should take in one parameter, a `TradersOrder`, that allows `func` to place orders.
 		'''
 		def f():
 			order = TradersOrder()
@@ -98,18 +105,25 @@ class TradersOrder:
 
 	def addBuy(self, ticker, quantity, price = None, token = None):
 		'''
-		hyuh
+		Add a buy order for `ticker`, of size `quantity` shares. If no price is passed in,
+		the buy is taken as a market order. If `quantity` is negative, it is interpreted as a
+		sell order of the positive amount. See :ref:`tokens` for the token parameter.
 		'''
 		self.addTrade(ticker, True, quantity, price, token)
 	def addSell(self, ticker, quantity, price = None, token = None):
 		'''
-		hyuh
+		Add a sell order for `ticker`, of size `quantity` shares. If no price is passed in,
+		the sell is taken as a market order. If `quantity` is negative, it is interpreted as a
+		buy order of the positive amount. See :ref:`tokens` for the token parameter.
 		'''
 		self.addTrade(ticker, False, quantity, price, token)
 
 	def addTrade(self, ticker, isBuy, quantity, price = None, token = None):
 		'''
-		hyuh
+		Submit an order for `ticker`, of size `quantity` shares. The order is a buy if `isBuy`
+		is True and a sell otherwise. The order is a market order if no price is passed in.
+		If `quantity` is negative, it is interpreted as an order of the opposite type, of the
+		positive amount. See :ref:`tokens` for the token parameter.
 		'''
 		if quantity == 0:
 			return
@@ -124,13 +138,43 @@ class TradersOrder:
 			self.orders[-1]["token"] = token
 	def addCancel(self, ticker, orderId):
 		'''
-		hyuh
+		Cancel the order for `ticker` with the given `orderId`. The `orderId` is returned
+		on `onAckModifyOrders`.
 		'''
 		self.cancels.append({"ticker":ticker, "order_id":orderId})
 
 	def toJson(self, token = None):
 		'''
-		hyuh
+		Turns a TradersOrder into a JSON string ready to be sent over to MangoCore. See :ref:`JSON`
+		for the details of this format. By default, TradersBot will call this function for you with
+		``token=None`` and then send the JSON to MangoCore, so there's no need to call it manually.
+		However, there are two possible reasons to call it in your own code:
+
+		#.	You want to specify a token for this set of orders, so you can keep track of them later.
+			In this case, call ``toJson(token)`` at the end of your code, after you added all your
+			buys, sells, and cancels.
+		#.	You want to split your orders to be split up into multiple JSON messages. This scenario
+			is highly unlikely; splitting up the orders will make you hit your rate limit faster,
+			and offers no obvious benefits. Regardless, here is example code showing how to do so
+			and the how the sent message differs from the usual:
+
+			.. code-block:: python
+
+				# When callback1 is called, MangoCore will receive 1 message
+				# 1: {"message_type":"MODIFY ORDERS", "orders":[{"ticker":"AAPL","buy":true,"quantity":20},{"ticker":"GOOG","buy":false,"quantity":50}]}
+				def callback1(msg, order):
+					order.addBuy('AAPL', 20)
+					order.addSell('GOOG', 50)
+
+				# When callback2 is called, MangoCore will receive 2 messages
+				# 1: {"message_type":"MODIFY ORDERS", "orders":[{"ticker":"AAPL","buy":true,"quantity":20}]}
+				# 2: {"message_type":"MODIFY ORDERS", "orders":[{"ticker":"GOOG","buy":false,"quantity":50}], "token":"TOKEN123"}
+				def callback2(msg, order):
+					order.addBuy('AAPL', 20)
+					order.toJson()
+					order.addSell('GOOG', 50)
+					order.toJson("TOKEN123")
+
 		'''
 		msgMap = {"message_type":"MODIFY ORDERS"}
 		if len(self.orders) > 0:

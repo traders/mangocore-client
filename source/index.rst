@@ -17,8 +17,9 @@ In all cases, the API can be used passively, to only receive updates from MangoC
 Contents:
 **************************************
 .. toctree::
-   :maxdepth: 2
+	:maxdepth: 2
    
-   install
-   bot
-   order
+	install
+	bot
+	order
+	json
