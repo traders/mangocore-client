@@ -18,15 +18,226 @@ class TradersBot:
 		self.token = token
 
 		self.onAckRegister		= self.__doNothing
-		self.onPing				= self.__doNothing
+		"""MangoCore has acknowledged your registration. Callback function should be in form
+		`f(msg, TradersOrder)` where msg is in the following format:
+
+		.. code-block:: python
+
+			{
+			    "message_type": "ACK REGISTER",
+			    "case_meta": {
+			        "case_length": 300,
+			        "securities": {
+			            "AAPL": {
+			                "tradeable": True,
+			                "starting_price": 100,
+			                "underlyings": {
+			                    "AAPL": 1
+			                }
+			            },
+			            # and so on...one per security
+			        },
+			        "underlyings": {
+			            "AAPL": {
+			                "name": "AAPL",
+			                "limit": 1000
+			            },
+			            # and so on...one per security
+			        }
+			    },
+			    "end_time": "0001-01-01T00:00:00Z",
+			    "market_states": {
+			        "AAPL": {
+			            "ticker": "AAPL",
+			            "bids": {},
+			            "asks": {},
+			            "last_price": 100,
+			            "time":  "2015-03-21T20:54:05.530846913Z"
+			        },
+			        # and so on...one per security
+			    },
+			    "trader_state": {
+			        "cash": {"USD": 100000}
+			        # ... 
+			        # this trader_state identical to one in onTraderUpdate
+			        # see there for full details of this object
+			    
+			    },
+			    # this token will match the one passed into TradersBot constructor
+			    "token": "aylmao"
+			}
+
+		"""  
 		self.onMarketUpdate		= self.__doNothing
+		"""An update with the orderbook and last transaction price of some single ticker has arrived.
+		This update will arrive roughly every half-second, as opposed to every time some event has changed
+		the orderbook. But, you can still keep track of the orderbook at all times by listening to
+		onTrade, which you do receive all of, and updating the orderbook accordingly. Callback function
+		should be in form `f(msg, TradersOrder)` where `msg` is in the following format:
+
+		.. code-block:: python
+
+			{
+			    "message_type": "MARKET UPDATE",
+			    "market_state": {
+			        "ticker": "AAPL",
+			        "bids": {
+			            "99.86": 350,
+			            "99.87": 350,
+			            "99.88": 300,
+			            "99.89": 300,
+			            "99.90": 300,
+			            "99.91": 99,
+			            "99.92": 170
+			        },
+			        "asks": {
+			            "100.07": 133,
+			            "100.08": 200,
+			            "100.09": 250,
+			            "100.10": 300,
+			            "100.11": 300,
+			            "100.13": 350,
+			            "100.14": 350
+			        },
+			        "last_price": 100.07,
+			        "time":  "2015-03-21T21:12:17.764384883Z"
+			    }
+			}
+
+		"""
 		self.onTraderUpdate		= self.__doNothing
+		"""A periodic update with your current trade state (positions, PNL, open orders, ...) has arrived.
+		This update will also only arrive roughly every half-second, but you should be internally keeping
+		track of your positions and cash anyways, so much of this information should already be known.
+		Callback function should be in form `f(msg, TradersOrder)` where `msg` is in the following format:
+
+		.. code-block:: python
+
+			{
+			    "message_type": "TRADER UPDATE",
+			    "trader_state": {
+			        "cash": {"USD": 100000},
+			        "positions": {
+			            "AAPL": 0,
+			            "IBM": 0,
+			            "IDX": 0
+			        },
+			        "open_orders": {},
+			        "pnl": {"USD": 0},
+			        "time": "2015-03-21T20:54:05.530826573Z",
+			        "total_fees": 0,
+			        "total_fines": 0,
+			        "total_rebates": 0
+			    }
+			}
+
+		"""
 		self.onTrade			= self.__doNothing
+		"""A trade (not necessarily involving you) has occurred. Callback function should be in form
+		`f(msg, TradersOrder)` where `msg` is in the following format:
+		
+		.. code-block:: python
+
+			{
+			    "message_type": "TRADE",
+			    "trades": [
+			        {
+			            "trade_id": "AAPL:12",
+			            "ticker": "AAPL",
+			            "buy_order_id": "AAPL:88",
+			            "sell_order_id": "AAPL:48",
+			            "quantity": 50,
+			            "price": 100.07,
+			            "buy": True,
+			            "time":  "2015-03-21T21:12:17.764311405Z"
+			        },
+			        # more trade {...} of the same type
+			    ]
+			}
+
+		"""
 		self.onAckModifyOrders	= self.__doNothing
+		"""MangoCore has acknowledged your sell/buy/cancel order. Callback function should be in form
+		`f(msg, TradersOrder)` where `msg` is in the following format:
+
+		.. code-block:: python
+
+			{
+			    "message_type": "ACK MODIFY ORDERS",
+			    "cancels": {
+			        "AAPL:8349": None
+			    },
+			    "orders": [
+			        {
+			            "order_id": "AAPL:900o",
+			            "ticker": "AAPL",
+			            "buy": True,
+			            "quantity": 100,
+			            "price": 99.74,
+			            "token": "sqv6ajor"
+			        },
+			        # more order {...} of the same type
+			    ],
+			    "token": "ze12a9k9"
+			}
+
+		A cancel with a None value indicates a successful cancellation.
+		"""
 		self.onNews				= self.__doNothing
+		"""A news event has arrived. Callback function should be in form
+		`f(msg, TradersOrder)` where msg is in the following format:
+		
+		.. code-block:: python
+
+			{
+			    "message_type": "NEWS",
+			    "news": {
+			        "headline": "Apple releases new Macbook",
+			        "source": "Ars Technica",
+			        "body": "Today, Apple releases a new shiny laptop.",
+			        "time": 235,
+			        "price": 0
+			    }
+			}
+
+		Where time is the number of ticks since the round started, and price is the amount you must pay
+		per news item you receive from this source (currently irrelevant).
+		"""
 		self.onAckSubscribe		= self.__doNothing
+		"""
+		.. note::
+			The 2016 competition won't require subscribing to news, so this callback won't be used.
+
+		MangoCore has acknowledged your subscription to a news source.
+		"""
 		self.onTenderOffer		= self.__doNothing
+		"""
+		.. note::
+			The 2016 competition won't involve tender offers, so this callback won't be used.
+		
+		There's a tender offer you can accept.
+		"""
 		self.onAckTenderOffer	= self.__doNothing
+		"""
+		.. note::
+			The 2016 competition won't involve tender offers, so this callback won't be used.
+
+		MangoCore has acknowledged your tender offer order.
+		"""
+		self.onPing				= self.__doNothing
+		"""
+		.. note::
+			MangoCore sends ping messages just to keep WebSocket connections alive. This probably
+			isn't something that's useful to listen for.
+
+		MangoCore sent the client a ping message. Callback function should be in the form
+		`f(msg, TradersOrder)` where `msg` is the following:
+
+		.. code-block:: python
+
+			{ "message_type": "PING" }
+
+		"""
 
 		self.__periodics = []
 
@@ -58,7 +269,8 @@ class TradersBot:
 			self.__write(json.dumps({'message_type' : 'REGISTER'}))
 	def run(self):
 		'''
-		hyuh
+		Starts the TradersBot. After this point, you can't add or modify any callbacks of
+		the TradersBot.
 		'''
 		self.fmap = {
 			'ACK REGISTER'		: self.onAckRegister,
@@ -81,7 +293,7 @@ class TradersBot:
 	def addPeriodicCallback(self, func, periodMs):
 		'''
 		.. warning::
-			This function only exists because it used in MangoCore stress tests, to make sure
+			This function only exists because it's used in MangoCore stress tests to make sure
 			MangoCore remains performant under periods of high frequency trade. We strongly advise
 			against using this function in your trading code. Trades should happen in reaction to
 			market events, which is what callbacks are for.
