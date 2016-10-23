@@ -1,3 +1,4 @@
+[![Documentation Status](https://readthedocs.org/projects/mangocore-client/badge/?version=latest)](http://mangocore-client.readthedocs.io/en/latest/?badge=latest)
 # TradersBot
 Python wrapper for MangoCore API; used for Traders@MIT algorithmic trading cases. Compatible with Python 2.7/3.
 
