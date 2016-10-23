@@ -3,6 +3,8 @@ TradersBot
 .. autoclass:: tradersbot.TradersBot	
     :members: run, addPeriodicCallback
 
+.. _callbacks:
+
 TradersBot Callbacks
 --------------------------------------
 Before calling ``run``, you should set the callbacks for each message type
