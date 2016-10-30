@@ -1,5 +1,4 @@
 import json
-import zlib
 import tornado.ioloop, tornado.websocket
 from tornado import gen
 
@@ -246,8 +245,7 @@ class TradersBot:
 	def __handle_read(self, msg):
 		if msg is None:
 			return
-		msg = zlib.decompress(msg, 16 + zlib.MAX_WBITS)
-		msg = json.loads(msg.decode('utf-8'))
+		msg = json.loads(msg)
 		func = self.fmap.get(msg['message_type'])
 		if func is not None:
 			order = TradersOrder()
