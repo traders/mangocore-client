@@ -1,6 +1,7 @@
 import json
 import tornado.ioloop, tornado.websocket
 from tornado import gen
+import traceback
 
 class TradersBot:
 	# takes in variable number of args
@@ -249,7 +250,11 @@ class TradersBot:
 		func = self.fmap.get(msg['message_type'])
 		if func is not None:
 			order = TradersOrder()
-			func(msg, order)
+			try:
+				func(msg, order)
+			except Exception as e:
+				traceback.print_exc()
+				tornado.ioloop.IOLoop.instance().stop()
 			order.toJson()
 			for j in order.jsons:
 				self.__write(j)
