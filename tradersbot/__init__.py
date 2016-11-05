@@ -263,18 +263,22 @@ class TradersBot:
 		self.ws.write_message(msg)
 
 	@gen.coroutine
-	def __connect(self):
+	def __connect(self, dontReceiveOnTrade):
 		self.ws = yield tornado.websocket.websocket_connect('ws://%s:10914/%s/%s' %
 			(self.host, self.id, self.password), on_message_callback = self.__handle_read)
 		if self.token is not None:
-			self.__write(json.dumps({'message_type' : 'REGISTER', 'token' : self.token}))
+			self.__write(json.dumps({'message_type' : 'REGISTER', 'token' : self.token, 'is_web_client': dontReceiveOnTrade}))
 		else:
-			self.__write(json.dumps({'message_type' : 'REGISTER'}))
+			self.__write(json.dumps({'message_type' : 'REGISTER', 'is_web_client': dontReceiveOnTrade}))
 	def run(self):
 		'''
 		Starts the TradersBot. After this point, you can't add or modify any callbacks of
 		the TradersBot.
 		'''
+		dontReceiveOnTrade = False
+		# if not subscribed to onTrade, only receive your own onTrade
+		if self.onTrade == self.__doNothing:
+			dontReceiveOnTrade = True
 		self.fmap = {
 			'ACK REGISTER'		: self.onAckRegister,
 			'PING'				: self.onPing,
@@ -287,7 +291,7 @@ class TradersBot:
 			'TENDER OFFER'		: self.onTenderOffer,
 			'ACK TENDER OFFER'	: self.onAckTenderOffer
 		}
-		self.__connect()
+		self.__connect(dontReceiveOnTrade)
 		tornado.ioloop.PeriodicCallback(lambda : None, 1000).start()
 		for p in self.__periodics:
 			tornado.ioloop.PeriodicCallback(p[0], p[1]).start()
