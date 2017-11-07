@@ -245,6 +245,8 @@ class TradersBot:
 	# them accordingly
 	def __handle_read(self, msg):
 		if msg is None:
+			print("WebSocket connection has closed")
+			tornado.ioloop.IOLoop.instance().stop()
 			return
 		msg = json.loads(msg)
 		func = self.fmap.get(msg['message_type'])
@@ -252,12 +254,11 @@ class TradersBot:
 			order = TradersOrder()
 			try:
 				func(msg, order)
+				order.toJson()
+				for j in order.jsons:
+					self.__write(j)
 			except Exception as e:
 				traceback.print_exc()
-				tornado.ioloop.IOLoop.instance().stop()
-			order.toJson()
-			for j in order.jsons:
-				self.__write(j)
 
 	def __write(self, msg):
 		self.ws.write_message(msg)
