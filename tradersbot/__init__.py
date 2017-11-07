@@ -278,9 +278,9 @@ class TradersBot:
 		'''
 		subAllTrade = False
 		# if not subscribed to onTrade, only receive your own onTrade
-		if self.onTrade != self.__doNothing:
-			subAllTrade = True
-                print("sub all trades", subAllTrade)
+		#if self.onTrade != self.__doNothing:
+		#	subAllTrade = True
+		#	print("Subscribing to all trades", subAllTrade)
 		self.fmap = {
 			'ACK REGISTER'		: self.onAckRegister,
 			'PING'				: self.onPing,
