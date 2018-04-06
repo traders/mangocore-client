@@ -65,3 +65,10 @@ the two lines above.
 	            order.addBuy('AAPL', 10, px - 0.02)
 	            order.addSell('AAPL', 10, px + 0.02)
 	t.onTrade = marketMake
+
+Running TradersBot
+--------------------------------------
+After adding all callbacks, call `t.run()` to start trading. TradersBot
+will then connect to the MangoCore server and call your specified
+callbacks upon an event. After calling this function, you cannot add or
+modify your callbacks.
