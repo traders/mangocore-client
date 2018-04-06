@@ -142,12 +142,13 @@ class TradersBot:
 			    "message_type": "TRADE",
 			    "trades": [
 			        {
-			            "trade_id": "AAPL:12",
+			            "trade_id": 12,
 			            "ticker": "AAPL",
-			            "buy_order_id": "AAPL:88",
-			            "sell_order_id": "AAPL:48",
+			            "buy_order_id": 88,
+			            "sell_order_id": 48,
 			            "quantity": 50,
 			            "price": 100.07,
+			            # of the two orders that matched, is the more recent one a buy?
 			            "buy": True,
 			            "time":  "2015-03-21T21:12:17.764311405Z"
 			        },
@@ -155,6 +156,9 @@ class TradersBot:
 			    ]
 			}
 
+		order_id and trade_id are separate, globally incrementing integers (i.e. the first submitted
+		order has id 0; the next has id 1, and so on; the first trade has id 0, the next has id 1, and
+		so on).
 		"""
 		self.onAckModifyOrders	= self.__doNothing
 		"""MangoCore has acknowledged your sell/buy/cancel order. Callback function should be in form
@@ -165,11 +169,11 @@ class TradersBot:
 			{
 			    "message_type": "ACK MODIFY ORDERS",
 			    "cancels": {
-			        "AAPL:8349": None
+			        "324": true, "1915": false
 			    },
 			    "orders": [
 			        {
-			            "order_id": "AAPL:900o",
+			            "order_id": "3748",
 			            "ticker": "AAPL",
 			            "buy": True,
 			            "quantity": 100,
@@ -181,7 +185,7 @@ class TradersBot:
 			    "token": "ze12a9k9"
 			}
 
-		A cancel with a None value indicates a successful cancellation.
+		A cancel with a true value indicates a successful cancellation.
 		"""
 		self.onNews				= self.__doNothing
 		"""A news event has arrived. Callback function should be in form
