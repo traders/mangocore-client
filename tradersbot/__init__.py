@@ -58,16 +58,16 @@ class TradersBot:
 			    },
 			    "trader_state": {
 			        "cash": {"USD": 100000}
-			        # ... 
+			        # ...
 			        # this trader_state identical to one in onTraderUpdate
 			        # see there for full details of this object
-			    
+
 			    },
 			    # this token will match the one passed into TradersBot constructor
 			    "token": "aylmao"
 			}
 
-		"""  
+		"""
 		self.onMarketUpdate		= self.__doNothing
 		"""An update with the orderbook and last transaction price of some single ticker has arrived.
 		This update will arrive roughly every half-second, as opposed to every time some event has changed
@@ -135,7 +135,7 @@ class TradersBot:
 		self.onTrade			= self.__doNothing
 		"""A trade (not necessarily involving you) has occurred. Callback function should be in form
 		`f(msg, TradersOrder)` where `msg` is in the following format:
-		
+
 		.. code-block:: python
 
 			{
@@ -186,7 +186,7 @@ class TradersBot:
 		self.onNews				= self.__doNothing
 		"""A news event has arrived. Callback function should be in form
 		`f(msg, TradersOrder)` where msg is in the following format:
-		
+
 		.. code-block:: python
 
 			{
@@ -214,7 +214,7 @@ class TradersBot:
 		"""
 		.. note::
 			The 2016 competition won't involve tender offers, so this callback won't be used.
-		
+
 		There's a tender offer you can accept.
 		"""
 		self.onAckTenderOffer	= self.__doNothing
